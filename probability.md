@@ -1,0 +1,174 @@
+- p
+	- If I say, "What do you think is the chance that it's raining, given that the sidewalk is wet?", then we understand this as asking about $P(\text{rain} | \text{wet})$ . But what sort of thing is ' $\text{rain} | \text{wet}$ '?
+	- Well, it's about the possibility of it raining *given* that the sidewalk is wet. If we think in terms of concrete possibilities, we can recognize that the conditional is about the possibilities in which it is both raining and wet as they relate to the possibilities in which it is wet.
+	- 'raining' is about these possibilities: [Images of different worlds where it is raining]
+	- 'wet' is about these other possibilities: [Images of different worlds where the sidewalk is wet]
+	- 'raining, given that it's wet': that's about the intersection...
+	- But that's not the whole picture. It's about the intersection, relative to the possibilities where it is *wet*.
+	- $\text{rain} \cap \text{wet} \subseteq \text{wet}$ . That's what the conditional *is*, an inclusion morphism.
+	- From this, a categorified form of probability theory follows; by requiring invariance under extension and respect for the order structure, we recover the original theory. Everything flows from the semantics.
+	- # 1 Meaning
+		- ## 1.0 Meaning is Subjective
+			- Jaynes famously admonished us that probabilities are inherently subjective: Beliefs belong to a believer. This subjectivity must be taken even further: Meaning belongs to a meaner.
+			- Intuitively this makes perfect sense, we all know that it matters who said something, that people understand different words differently, and have different models of what is going on.
+			- But mathematics has been sold to us as our liberator from this cursèd subjectivity. Finally, here was something where meaning was finally objective. Every symbol has a specific meaning, carefully defined in formal notation, and with ironclad laws governing their use.
+			- Defined by whom? The illusion falls apart once you start asking questions like these. Yet a kernel of the truth remains, the principle upon which we'll rebuild probability: The Laws are part of the Meaning. Change the laws governing a symbol, and you've changed its meaning.
+		- ## 1.1 Describing Meaning
+			- To describe *what* you mean, we need **semantics**. To do this, we use certain objects, called **models**. Each model represents a way that you think the world could be. It may be intuitively helpful to think of a model as a specific possibility (including potentially counterfactual possibilities). I'll generally call them **possibilities** for this reason.
+			- And then there's the specific things you say or write, the things that *mean* something. This is the **syntax**. Practically, the best we can do is to represent this with language, which we'll further round off to text strings. We can include special "operator" symbols which represent ways you can combine these strings to form more complex expressions. Some important operations are: and ( $\wedge$ ), or ( $\vee$ ), and not ( $\neg$ ).
+			- Binding these together, we can express *meaning*. We define the meaning of any expression by stating for which models the expression is true. To denote the set of models satisfying a sentence $S$ , we'll write $M_S$ . This relation is the formalization of what you *mean* when you say something!
+			- Importantly, our $M$ here must belong to a *specific* meaner. That is why I cannot be content to use more standard notations which try to hide the meaner, such as $[[S]]$ for what I write as $M_S$ . This will matter more once I write about communication, but that will be the topic of another essay.
+			- Let's try using this framework to define simple logic. Now, the way this usually works goes something like this:
+			- We'll define an "and" operator, with the meaning $M_{A \text{ and } B } := M_A \cap M_B$ . Or in other words, that "A and B" means all the possibilities with both the meaning of $A$ and of $B$ .
+			- This can be confusing because of just how simple and mundane it actually is: how the word "and" comes to mean and. Since I still have to *talk* about the meaning side, we have the mathematical version of having to define words with more words.
+			- If "and" is a bit too inconvenient, we can define a symbol with the same meaning. $M_{A \wedge B } := M_A \cap M_B$ . Or even the lack of a symbol $M_{AB } := M_A \cap M_B$ .
+			- Similarly, we can define $M_{A \vee B} := M_A \cup M_B$ .
+			- For "not", we'd need to introduce a set of all models $U$ for this context, but then we could say $M_{\neg A} := U \setminus M_A$ .
+			- But for "implies", it's a bit trickier. The most intuitive thing to do would be to simply define $M_{A \rightarrow B}$ as $M_A \subseteq M_B$ , which plainly means that any model of $A$ is also a model of $B$ . But $M_A \subseteq M_B$ is not itself a set as in the other cases! Sure, there are plenty of ways you could render this as a set, but it most naturally is a relation *between* sets. In logic, we write this as $A\models B$ , but this does not exist at the same level as the familiar connectives.
+			- You likely were taught at some point to use something like $M_{A \rightarrow B} := (U \setminus M_A) \cup M_B$ , which is called material implication. This works at the logical level (convince yourself this is $U$ iff $M_A\subseteq M_B$ ), but it is flattening a lot of the natural structure that is present.
+			- And in fact, the [Lewis Triviality result](https://en.wikipedia.org/wiki/Lewis%27s_triviality_result) decisively tells us that the conditional in probability theory cannot be considered to be the probability of *any* logical proposition [check, sol thought this was incorrect]. It's a different sort of thing, and the subset structure matters in a way which we must not allow ourselves to iron out. We'll simply have to be more careful in how we set things up, which means we'll need categorical semantics. Luckily, Lawvere paved the way for us many years ago.
+		- ## 1.2 Categorical Model Theory Basics
+			- ### 1.2.0 Context
+				- When we want to talk about something, it's natural to have a particular context in which certain symbols have meanings specific to that context. I can write in English, and with the same words, I can write in Python with a distinct meaning. It would be too confining to declare once and for all that $\wedge$ has the meaning $M_{A \wedge B } := M_A \cap M_B$ , even though that's exactly what I want for the context we'll be in.
+				- Each context comes with its own sentences which can each have their own meaning. In other words, there will be sentences $S$ , which have the meaning $M_S$ of the possibilities they refer to. I'm deliberately keeping things general enough to include ordinary English!
+				- These all belong to the same $M$ , our meaner. When necessary to specify the context, I'll use $M^\mathcal C$ , so a sentence $S$ in the context $\mathcal C$ has the set of possibilities $M^\mathcal C_S$ as its meaning.
+				- Now *within* the context, we have sentences $A$ and $B$ , which may have an entailment $A \models B$ relation between them. This is the thing we wanted implication to be earlier. And it just means that the possibilities of $A$ are also possibilities of $B$ . I.e. $M^\mathcal C_A \subseteq M^\mathcal C_B$ . These are the morphisms of $\mathcal C$ .
+				- It's really tempting to think of entailment as meaning something like "Assuming $A$ , then $B$ ". But that contracts the meaning down to whether or not they're possible! You're missing out on the good stuff if you do this, as Lewis taught us. Simply think of it as its true meaning: the possibilities of $A$ are possibilities of $B$ .
+				- But do note that I'm still just considering $\mathcal C$ itself as a thin category. Proof-relevance would be an interesting direction to take things, but it's not needed for what I'm doing here.
+				- As part of our syntactic requirements, we'll ensure that $\wedge$ (the **meet**, defined above) exists for any two sentences in our context, and that anything which entails both $A$ and $B$ entails $A\wedge B$ . We'll also ensure that $\top$ exists, a sentence entailed by everything (and hence representing all possibilities), which together are equivalent to saying that all finite meets exist.
+			- ### 1.2.1 Mean What You Say
+				- I've been assuming that $M^\mathcal C_S$ , the possibilities of $S$ , is just an ordinary set. That's perfectly fine as long as that's what you actually mean, where there's no structure *between* possibilities that matters to you.
+				- But we want this framework to be more general than just that! Semantically, we should represent exactly that structure which we believe to be present, no more, and no less. I call this the "Mean What You Say" principle.
+				- One of the main reasons to bother with reworking the foundations of probability at this level is to be able to better apply it to physics. Specifically, it was important to me that it be able to represent the case where a singular possibility is more than just a point! This is basically what gauge theory is all about, and a famous instance is that it is the *rays*, not the *points* that correspond to physical states in a Hilbert space.
+				- #### 1.2.1.0 Dynads and Ontologies
+					- Abstractly, what should a container of possibilities look like? I'll call such a container a **dynad** (from Greek *dynatos* + *-ad*, meaning "a set of possibilities"). So far, our dynads have just been finite sets, but the fun stuff happens once you generalize beyond that. What a sentence $S$ means is given by the dynad.
+					- But more important than the dyands themselves are the categories that they're the objects of. I'll call this type of category an **ontology**.
+						- Subobjects
+							- As we saw in the intro, intersections are inherent to the concept of a conditional (which we'll understand more deeply in the next section). So we need intersections. And categorically, intersections are pullbacks of monos, under the subobject equivalence.
+							- We needed subobjects anyway, these are exactly the monos that correspond to entailment on the syntactic side!
+							- It's standard to organize this subobject structure into something called the subobject fibration $\mathrm{Sub}$ .
+						- Monoidal product
+							- Next, we need to be able to handle all the various contexts. In the original categorical semantics that we're drawing from, adding a new context is how we add a new variable (in the logic), and in fact, our natural insistence on the *right* to introduce new random variables as we please depends on our ability to do this, so we had better be able to say what this even means!
+							- And so, we introduce an operator $\otimes$ , which corresponds to the introduction of a new context (e.g. a new variable) on the syntactic side.
+							- The order in which we do this shouldn't change the meaning, and neither should the way in which we group multiple operations. So we want this operator to be symmetric and associative.
+							- We will also introduce a special dynad $I$ which is a unit to this operator. This must therefore correspond to the case where our new variable leaves the structure of the dynad identical, or in other words, is completely *determined*. In intuitive dynad categories, this is a singleton dynad.
+							- And so our dynad category is symmetric monoidal, with $(\otimes, I)$ .
+						- Compatibility
+							- As is typical with these sorts of constructions, we need our two structures to play along well with each other.
+							- In particular, the existing subobject structure should remain unaffected by the introduction of new contexts... with a few small subtleties.
+							- First, let's specify how context extension by $K$ (i.e. $-\otimes K$ ) acts on the subobjects: a mono $A\hookrightarrow X$ goes to $A\otimes K\hookrightarrow X\otimes K$ .
+							- Next, it's possible that the context is empty, corresponding to a contradiction. We'll define an inhabited context as one for which $K\to I$ is epic (you could think of this as saying there has to be at least one full possibility).
+							- So now we can say that by "unaffected", what we really mean is that we neither gain nor lose any entailments or intersections: the logic is completely unchanged, even though there *are* new semantic possibilities (the whole point of having a new context).
+							- The slick way to say this is that context extension by an inhabited context $K$ is faithfully flat, i.e. $K$ acts via $\mathrm{Sub}(X)\to\mathrm{Sub}(X\otimes K)$ , and this action is injective and preserves finite limits (and hence intersections).
+						- Hence, we define a dynad category as a symmetric monoidal category with subobjects, and where each context extension by an inhabited context is faithfully flat on the subobject lattice.
+					- Every topos is an ontology (good, because the concept of a topos is what Lawvere intended as the semantic carrier), but we also get $\mathbf{Hilb}$ . A non-example is $\mathbf{Ab}$ (context extension by $\mathbb Z\oplus \mathbb Z/2\mathbb Z$ does not yield an injective meet-homomorphism).
+					- I'll use $\mathbf V$ for the ontology. The choice of ontology will generally yield different prior probabilities — priors are determined by the *meaning*.
+				- So let's think of $M$ as mapping these syntactic contexts to their dynad meanings.
+				- Within a specific context, we have entailments $A \models B$ , which are morphisms in $\mathcal C$ . For this meaning to be represented by $M$ , it must be functorial, mapping them to morphisms in $\mathbf {V}$ .
+				- And as promised, the entailments map to the subobject monos of the dynad category: $M^\mathcal C_{A\models B} := M^\mathcal C_A \hookrightarrow M^\mathcal C_B$ (where $\hookrightarrow$ is the specific inclusion map (or **mono**) behind the subobject relation $\subseteq$ ). Hence, $M^\mathcal C$ is a covariant functor $\mathcal C \rightarrow \mathbf{V}$ .
+				- We can now do what we wanted to do earlier, we'll just fix a propositional logic context where we can use entailment in lieu of material implication!
+	- # 2 Conditionals
+		- ## 2.0 Dreaming of Another Context
+			- Let's consider observing new evidence. In our framework, what kind of thing on the semantics side responds to this?
+			- We saw earlier how to do this, where we start with our context $\mathcal C$ , and create a new context $\mathcal C'$ which takes our new evidence $E$ as axiomatically true, but otherwise keep everything as in $\mathcal C$ .
+			- And semantically, this means that for any sentence $S$ , that $M^{\mathcal C'}_S = M^\mathcal C_S \cap M^\mathcal C_E$ .
+			- Category theory teaches us that to really understand transformations like this, we also need to understand how the *relationships* between sentences changes. In other words, for every $A \models B$ , where does the evidence take us as we update our context?
+			- Meaning-wise, we have $M^\mathcal C_A \subseteq M^\mathcal C_B$ which of course gets taken to $M^{\mathcal C'}_A \subseteq M^{\mathcal C'}_B$ .
+			- Now the fun part: from within our starting context $\mathcal C$ , we can *contemplate* accepting the evidence $E$ as true without actually moving to $\mathcal C'$ , because we now know exactly how the update works!
+			- The meaning of an entailment, *conditional *on $E$ , is $M^{\mathcal C'}_A \subseteq M^{\mathcal C'}_B$ . And as expressed entirely within $\mathcal C$ , this is $M^\mathcal C_A \cap M^\mathcal C_E \subseteq M^\mathcal C_B\cap M^\mathcal C_E$ . Or more succinctly, $M^\mathcal C_{AE} \subseteq M^\mathcal C_{BE}$ .
+			- In the special case where we are considering $A \models \top$ , this is exactly what I said the conditional should be at the beginning: $M_A \cap M_E \subseteq M_E$ (omitting $\mathcal C$ as understood).
+			- We'll define new syntax for this, $A_B\mid E$ The special case where $B=\top$ can be given the syntactic sugar $A\mid E$ .
+			- Now, what was surprising to me is that the math wanted $B$ to still be here, only on the right side. Of course, I could just retreat to the special case where we set it to $\top$ and then ignore it, and indeed that is what I'll do below to unencumber the derivation.
+			- But the math is telling us that there's something that we should have been tracking all along as an inherent part of conditionals... which turn out to be likelihoods! The awkward thing is that these have to be monos, which ends up corresponding to the likelihoods being less than one. I'm not sure what to do about this awkwardness yet, but I thought it was interesting the math wanted it to be here.
+		- ## 2.1 The Law of Conditionals
+			- We can discover laws of conditionals by looking for identities of inclusions in which each arrow has the form of a conditional. So we'll want to look at inclusions where the same thing is intersected on both the left and right sides. The simplest non-trivial such relation is the composition depicted by $M_A\cap M_B \cap M_C\subseteq M_B \cap M_C\subseteq M_C$ .
+			- Each mono here can be rewritten as a conditional.
+			- $M_B\cap M_C\subseteq M_C$ is $M_{B|C}$ .
+			- $M_A\cap M_B\cap M_C\subseteq M_B\cap M_C$ is $M_{A|BC}$ .
+			- $M_A\cap M_B\cap M_C \subseteq M_C$ is $M_{AB|C}$ .
+			- So writing the composition identity in these terms  we get that   
+			        
+$$M_{B|C} \circ M_{A|BC} = M_{AB|C}$$			- It's the chain rule! But notice that the order of the terms matters, it fails to type-check if we try to swap them. We can think of the additional semantic content here as forcing the types (i.e. the types of $A$ , $B$ , $C$ ) to match in a certain way, very much like units in dimensional analysis.
+			- Now, Bayes' theorem is the shadow of the fact that this diamond commutes, where using the same reasoning as above, we conclude that:
+			-
+$$M_{B|C} \circ M_{A|BC} = M_{A|C} \circ M_{B|AC}$$			- What's really interesting here is that the above diamond is utterly trivial!
+	-
+	- # 3 Quantification
+		- Ideally, our conditionals would be something that's invariant to context extension. The definition of an ontology is carefully constructed to make sure this is well-defined.
+		- 3.1 Uniform extension
+			- Lemma: For any possible $K$ : $M_A \subseteq M_B$ iff $M_A\otimes K \subseteq M_{B} \otimes K$ .
+			- Proof:
+				- ( $\Rightarrow$ ) Say $M_A\subseteq M_B$ . This is equivalent in the meet-semilattice to $M_A \wedge M_B = M_A$ . Since context extension by a possible $K$ preserves meets as well as monos (which induce the ordering by which the semilattice judges equality), we have that $M_A\otimes K \wedge M_B\otimes K = M_A\otimes K$ , and hence that $M_A\otimes K \subseteq M_B \otimes K$ .
+				- ( $\Leftarrow$ ) Start with $M_A\otimes K \subseteq M_B \otimes K$ , or in other words, $M_A\otimes K \wedge M_B\otimes K = M_A\otimes K$ . Since context extension is a meet-homomorphism, we can write $(M_A\wedge M_B )\otimes K = M_A\otimes K$ . By the injectivity of this map, we thus get $M_{A} \wedge M_{B} = M_{A}$ , and so $M_{A} \subseteq M_{B}$ . $■$
+				-
+			- Hence, we can define the invariant conditional $(A\mid E)$ to be the equivalence class $[M^\mathcal C_{AE} \otimes K \subseteq M^\mathcal C_{E} \otimes K]$ for all suitable $K$ , where we use parens to show this is the invariant form.
+			- Of course, the results from the above section straightforwardly apply to invariant conditionals, so we still have our analogue of Bayes' theorem.
+			- Beliefs are invariant under extension. So we'll consider our monos from here on as equivalence
+			  classes, defined by $[M_A \hookrightarrow M_B] ≡ [M_A\otimes M_K \hookrightarrow M_B\otimes M_K]$ for all inhabited $M_K$ .  
+		- 3.2 Total order on mono-classes
+			- Now, consider $[M_A \hookrightarrow M_B]$ and $[M_C \hookrightarrow M_D]$ .
+			- These are the same as $[M_D\otimes M_A \hookrightarrow M_D\otimes M_B]$ and $[M_C\otimes M_B\hookrightarrow M_D\otimes M_B]$
+			- And these are now directly comparable, based on whether there is a mono from $M_D \otimes M_A \hookrightarrow M_C \otimes M_B$ or the reverse. (One of which is always the case for   mathbf{FinSet}).
+			- Therefore all equivalence classes of monos can be placed into a total order, with the sole
+			  exception of $[M_\bot \hookrightarrow M_\bot]$ (but do note that this is semantically valid).  
+			  This is true even if the cardinality of $M_K$ is restricted in some way, such as being a power  
+			  of two.  
+			- Also note that this order is bounded by $[M_\bot \hookrightarrow M_\top]$ and $[M_top
+			  hookrightarrow M_top]$.  
+		- 3.2 Composition to Product
+			- The monos naturally inherit the product, and which remains well-defined under equivalence
+			  classes, and so we have:  
+			- $[M_A \hookrightarrow M_B] \times [M_B \hookrightarrow M_C] = [M_A \times M_B \hookrightarrow M_B \times M_C]$
+			- On the other hand, we have that
+			- $[M_A \hookrightarrow M_C]=[M_B\times M_A \hookrightarrow M_B\times M_C]$ by definition of our
+			  equivalence classes.  
+			- These are not the same equivalence classes. Here's the picture I used to convince myself of this: [pic]
+			- And maybe someone has a reason to care about this distinction still, in which case this is the end of the line.
+			- But if you're committed to the ordering, there are monos going both ways between $M_A\times M_B$ and $M_B\times M_A$ ! So by our ordering, this means that
+			- $[M_A\times M_B \hookrightarrow M_B\times M_C] \le [M_B\times M_A \hookrightarrow M_B\times M_C]$
+			- $[M_A\times M_B \hookrightarrow M_B\times M_C] \ge [M_B\times M_A \hookrightarrow M_B\times M_C]$
+			- Thus $[M_A \hookrightarrow M_B] \times [M_B \hookrightarrow M_C] \equiv [M_A \hookrightarrow M_C]$ , where $\equiv$ is equality in the ordering.
+			- Hence, we finally get to replace the composition with a product:
+			-
+$$[M_{Z|XY}] \times [M_{Y|X}]= [M_{YZ |X}]$$	- # 4 Quantification
+		- These are some cool identities, but as a practical device they are clunky and it may be unclear how to use them. There's a common strategy in mathematics for when you have something interesting but hard to use: look for information you don't really care about still getting dragged around by the algebra, and find a structure which makes it irrelevant.
+		- Now we ask whether we can quantify our conditional classes. By this, we mean that we have a homomorphism from conditionals which preserves the $\otimes$ structure (as well as the $⊨$ ordering, and the $\oplus$ structure if present). By going through a functor, we've allowed ourselves to forget the *contents* of the sets in the conditionals, since it must treat isomorphic sets equally.
+		- (If this doesn't seem justified to you, I'd say that if you want to remain sensitive to differences in meaning here, then you should explicitly represent those differences in meaning at the model level. In other words, try changing the category of models! I think quantification serves as a natural check on what you're actually tracking.)
+		- If we think about this blindness for a moment, we'll see that $P$ is not well-defined if our sets of conditionals are infinite, since things like $\{a\}\times \mathbb Z$ and $\{a, b\} \times \mathbb Z$ are isomorphic as sets! So we'll have to restrict to just using finite sets, which actually makes our lives much easier (don't worry, we'll see how to handle infinite sets in a bit).
+		- Through the functor, the only thing which we can see about our finite sets is their cardinality (cardinalities are equivalence classes under set isomorphism). So $P(X|Y)$ must be a function of $|M_Y|$ and $|M_X\cap M_Y|$ . I'll write this as $p(|M_Y|, |M_X\cap M_Y|)$ . It must also inherit the monoid structure, which means that $P(K|K)$ must be the monoidal unit (if $M_K$ is inhabited) , or in other words, that $$p(|M_Y|, |M_X\cap M_Y|)\otimes p(|M_K|, |M_K|) = p(|M_Y||M_K|, |M_X\cap M_Y||M_K|)$$
+		- Since $P$ is invariant across equivalence classes, this must be equal to $p(|M_Y|, |M_X\cap M_Y|)$ if $|M_K| \ge 1$ .
+		- To make this easier to reason about, we'll think of this as a monoid on pairs of natural numbers, with the rule that $(a, b) \otimes (k, k) = (ak, bk) = (a, b)$ , as long as $(k, k) \neq (0, 0)$ . In particular, all the non-zero $(k, k)$ 's are equal.
+		- This is a well-known construction: localization on the natural numbers, yielding the positive rationals!
+		- So we can set our $P$ to land here directly, setting $P(X|Y)$ to $\frac{|M_X \cap M_Y|}{|M_Y|}$ , and with $\otimes$ being the product on fractions.
+		- Is this the only possibility? Any such functor $P$ needs to preserve the $\otimes$ operator and the $⊨$ ordering, which ours does. As long as $P$ does not conflate any two things that we could still distinguish at this level (i.e. is faithful), we can map to the codomain of any other such functor. This is the case for us, since the localization construction is universal is just that sense, and the cardinalities are similarly faithful (when our sets are finite).
+		- So while we could do the same sorts of things with e.g. log-odds instead of probabilities, the mathematical content is identical. Hence, standard probability theory gives a complete accounting of the structure subjected to our constraints here!
+		- ## 4.2 Infinite sets
+			- Okay, but what about infinite sets? Seems pretty important to be able to handle those! Well, we can handle them as long as we give our models the sort of structure we need to make $P$ well-defined.
+			- What was the issue again? It was that with infinite sets, we can't distinguish things like $\{a\}\times \mathbb Z$ from $\{a, b\} \times \mathbb Z$ by cardinality (as Cantor famously showed). That means that our stipulation that expanding the possibility set not changing anything can't be meaningfully satisfied.
+			- One way we might deal with this would be to imagine we had (possibly infinite) sets, *along* with some extra information about them that allows such infinite comparisons. Call this information a measure $\mu$ . We'd like for it to work much the same way cardinalities of finite sets do, so we'd have products of measures, a set with a measure of zero, and laws about how measure interacts with union and intersection. This leads to the well-known concept of a measurable set.
+			- But there's a problem. The category of measurable sets, Meas... This causes all sorts of headaches. [Example]
+			- We can get around this by using Standard Borel spaces instead, which are much better behaved. [Why]
+			- We can of course project our measures are real numbers, we can simply set $P(X|Y)$ to $\frac{\mu(M_X \cap M_Y)}{\mu(M_Y)}$ . However, this is not universal, as there are non-trivial sets with measure zero.
+			- The normal way to deal with all this is to use Radon-Nikodym derivatives, but we can get the same results more simply...
+			- ## Non-Standard Probability Theory
+			- The interesting thing is that we can do this for all sorts of categories of models. For example, we can lay to rest the "gotcha" that the probability of hitting any specific point on the dartboard is zero. All we need to do is use the category of hyperfinite sets: *FinSet. Hyperfinite sets work just like finite ones, it's just that now there are new hyperfinite sets that are bigger than all the standard finite sets.
+			- We then get non-standard probabilities, and we can now see that the probability was $\epsilon$ , and recover the notion that probability zero is strictly for impossible things.
+			- This isn't just a cute trick, it allows us to continue using probabilities and summation where we would have to introduce probability densities and integration in the traditional approach, as well as define $P(Y|X)$ when $X$ has measure zero but has non-empty semantics. It also allows us to divide by infinitesimal probabilities which would otherwise be zero.
+		- ## The Principle of Indifference
+			- Another fun example is to consider our models as being G-sets, these are sets with a symmetry group built in. We would *need* to use these when our semantic meaning about something has an inherent symmetry to it (or else it wouldn't mean that).
+			- G-Set is a topos, so everything goes through. When we get to the quantification step, we find that we can decompose a G-set as the coproduct of the orbits. Alternatively, we can also decompose it as the coproduct of its individual elements. This coproduct structure needs to be preserved, and these also need to be consistent under the action of G. Therefore, the elements in the same orbit need to be equal by a homomorphism. This property must be maintained at the inclusions level as well, giving us the full principle of indifference.
+		- ## Jaynes' Transformation Groups
+			- However, this is not quite enough to recover Jaynes' transformation group priors. The simplest way to recover that is to look at *G-Set.
+		- ## Logical Induction
+			- Eff^ℕ?
+			- Topos of Trees?
+		- ## Ontological Updates
+			- What if we realize we were using the wrong category of models?
+			- We can extend to the product category of our previous category with our new category, and then we can learn the correlations the normal way
+		- # Cox Freed of Every Flaw
+		- In 1733, Saccheri wrote *Euclid Freed of Every Flaw*, where he attempted to vindicate Euclid's assumption of the parallel postulate, long considered a tragic flaw in the theory. In the process he came excruciatingly close to discovering non-Euclidean geometry.
+		- With this derivation, I've given what I find to be a far more satisfying justification for probabilities than Cox's theorem. Everything is semantically justified. Simply by thinking about what a conditional must mean from a model theoretic point of view, and by requiring invariance of conditionals under expansion of the model space, we get the Bayes-like equation $$[Z|X\wedge Y] \otimes [Y|X] = [Y\wedge Z |X].$$
+		- If we additionally demand quantification, then we get the result that quantified conditionals must be isomorphic to standard probability theory if our models are organized with finite or measurable sets.
+		- Though we do recover standard probability theory, the framework has flexibility hinting at new possibilities. The semantic category can be any category with pullbacks to get "Bayes Theorem". And note that the 'pullbacks' requirement  is necessary in order to have the concept of "conditionals" at all; it's not a technical thing needed to make the proof go through. For the "Sum rule", we also require the category to be extensive, which includes topoi (the natural thing for the meaning side of things to be), which should be fun to explore! I suspect that modifications of this to generally result in standard probabilities, but with priors constrained in specific ways (the way that the extension to G-sets worked, I'll show in a follow up post that we can also recover the Born rule via a similar extension).
+		- But what is even more important is that I've also provided you a map for developing probabilities in contexts beyond standard logic! For example, I suspect Pearl's causality is recoverable by supplementing the semantic conditionals with semantic interventions. Even more radical departures are possible, and I believe you can use this as a guide to find your version of bayesianism based on where exactly you interpret things differently, use distinct concepts, or get off the quantification train.
+		- Everything flows from the semantics.
